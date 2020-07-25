@@ -11,9 +11,12 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 //Route files
-//const user = require('./routes/user);
+const auth = require("./routes/auth");
 
 const app = express();
+
+//Body parser
+app.use(express.json());
 
 // DEV logging middlewar
 if (process.env.NODE_ENV === "development") {
@@ -21,7 +24,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Mount routers
-//app.use("/api/v1/user", user);
+app.use("/api/v1/auth", auth);
 
 //API routes
 
