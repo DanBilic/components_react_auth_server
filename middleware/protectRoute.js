@@ -17,12 +17,10 @@ exports.protectRoute = asyncHandler(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
 
-  /*
   //Bearer token is send with the cookie
-  else if(req.cookies.token){
-      token = req.cookies.token
+  else if (req.cookies.token) {
+    token = req.cookies.token;
   }
-  */
 
   //make sure token exists
   if (!token) {
