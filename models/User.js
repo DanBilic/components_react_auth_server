@@ -1,3 +1,6 @@
+//core module
+const crypto = require("crypto");
+
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const bcrypt = require("bcryptjs");
@@ -39,6 +42,11 @@ const UserSchema = new Schema({
 
 //encrypt password with bcrypt
 UserSchema.pre("save", async function (next) {
+  //if password is not modified move to the next middleware
+  if (!this.isModified("password")) {
+    next();
+  }
+
   const salt = await bcrypt.genSalt(10);
 
   //hash password with salt
@@ -57,6 +65,23 @@ UserSchema.methods.getSignedToken = function () {
 //match user password from request to hashed password in db
 UserSchema.methods.matchPassword = async function (requestPassword) {
   return await bcrypt.compare(requestPassword, this.password);
+};
+
+// generate && hash password token -> unique to identify reset process
+UserSchema.methods.getResetPasswordToken = function () {
+  //generate token
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  //hash token and set to resetPasswordToken field
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  //set expire time to 10 min
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 module.exports = mongoose.model("User", UserSchema);
