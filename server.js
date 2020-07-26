@@ -1,3 +1,6 @@
+//core moduel
+const path = require("path");
+
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -57,10 +60,14 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+//set static folder
+// path.join(__dirname, "public") -> joins files and folders together
+// !! static folder can be accessed in the browser with url:
+//localhost:6000/uploads/photo.jpg -> uploads is the static folder
+app.use(express.static(path.join(__dirname, "public")));
+
 //Mount routers
 app.use("/api/v1/auth", auth);
-
-//API routes
 
 app.use(errorHandler);
 
